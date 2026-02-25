@@ -2,22 +2,26 @@
 const qrcode = require('qrcode-terminal');
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        handleSIGINT: false,
+        args: ['--no-sandbox']
+    }
 });
 
 client.on('qr', (qr) => {
-    console.log('--- ESCANEA EL QR SI ES NECESARIO ---');
     qrcode.generate(qr, {small: true});
 });
 
 client.on('ready', () => {
-    console.log(' GLAWBOT-CORE: CONEXIÓN TOTAL ESTABLECIDA');
+    console.log(' SISTEMA LISTO Y ESCUCHANDO A EDGAR');
 });
 
-client.on('message', async msg => {
-    // Comando de estado personalizado
+client.on('message_create', async msg => {
+    // Usamos message_create para que también detecte lo que tú escribes
     if (msg.body.toLowerCase() === '!status') {
-        msg.reply('¡Hola Edgar!  Soy Glawbot-Core operativo en tu WinDev.\n\n Motor: Node.js v24\n Base: Java 21\n Nube: GitHub gemiegoo listo.\n\nTodo bajo control en el laboratorio.');
+        console.log('--- Comando !status detectado ---');
+        await client.sendMessage(msg.from, '¡Confirmado Edgar! \n\nEstoy operando desde tu WinDev.\nJava 21 y Node 24 están rugiendo. ');
     }
 });
 
